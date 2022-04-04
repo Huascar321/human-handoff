@@ -17,9 +17,9 @@ function App() {
   return (
     <>
       <div className="app-container">
+        <p style={{color: "black"}}>dato: {dataValue}</p>
         <ChatHeader/>
         <Input/>
-        <p>{dataValue.data}</p>
       </div>
     </>
   );
