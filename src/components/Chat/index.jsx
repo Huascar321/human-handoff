@@ -5,11 +5,19 @@ function Chat({ socket, messages, setMessages }) {
     socket.on("message", (data) => {
       let temp = messages;
       console.log(messages);
-      temp.push({
-        id: temp.length+1, 
-        user: "admin",
-        text: data.text,
-      });
+      if (data.user === "client") {
+        temp.push({
+          id: messages.length+1,
+          user: data.user,
+          text: data.text,
+        });
+      } else {
+        temp.push({
+          id: messages.length+1,
+          user: "admin",
+          text: data.text,
+        });
+      }
       setMessages([...temp]);
     });
   }, [socket]);
