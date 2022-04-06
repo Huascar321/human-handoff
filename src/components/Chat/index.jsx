@@ -1,11 +1,13 @@
 import React from 'react';
 
-function Chat({ socket }) {
-  const [messages, setMessages] = React.useState([]); 
+function Chat({ socket, messages, setMessages }) { 
   React.useEffect(() => {
     socket.on("message", (data) => {
       let temp = messages;
+      console.log(messages);
       temp.push({
+        id: temp.length+1, 
+        user: "admin",
         text: data.text,
       });
       setMessages([...temp]);
@@ -16,9 +18,10 @@ function Chat({ socket }) {
     <div className="chat-container">
       {messages.map((i) => {
         return (
-          <div className="message">
+          <div key={i.id} className="message">
             <p style={{color: "black"}}>{i.text}</p>
-            <span style={{color: "gray"}}>Cliente</span>
+            {(i.user === "client") && <span style={{color: "gray"}}>Cliente</span>}
+            {(i.user === "admin") && <span style={{color: "red"}}>Admin</span>}
           </div>
         );
       })}

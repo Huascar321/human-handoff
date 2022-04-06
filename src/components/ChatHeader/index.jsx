@@ -4,7 +4,7 @@ import './ChatHeader.scss';
 function ChatHeader() {
   return(
     <header>
-      <h1>Chat with a bot</h1>
+      <h1>Testing</h1>
     </header>
   );
 }

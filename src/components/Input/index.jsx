@@ -5,15 +5,18 @@ function Input({ socket, messages, setMessages }) {
   const [text, setText] = React.useState("");
 
   const sendData = () => {
-    socket.emit("message", {
-      text: text
-    });
     let temp = messages;
     temp.push({
-      user: "client",
+      id: temp.length+1,
+      user: "admin",
       text: text
     });
     setMessages([...temp])
+    console.log(messages);
+    console.log('se supone que entro')
+    socket.emit("message", {
+      text: text
+    });
   };
   return(
     <div className="submit-container">
@@ -23,6 +26,7 @@ function Input({ socket, messages, setMessages }) {
         onKeyPress={(e) => {
           if (e.key === "Enter") {
             sendData();
+            setText("");
           }
         }} 
         className="submit-container__textarea" placeholder="Escribe tu mensaje..."/>
