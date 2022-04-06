@@ -5,15 +5,14 @@ function Input({ socket, messages, setMessages }) {
   const [text, setText] = React.useState("");
 
   const sendData = () => {
-    let temp = messages;
-    temp.push({
-      id: temp.length+1,
-      user: "admin",
-      text: text
-    });
-    setMessages([...temp])
+    //let temp = messages;
+    //temp.push({
+    //  id: messages.length+1,
+    //  user: "admin",
+    //  text: text
+    //});
+    //setMessages([...temp])
     console.log(messages);
-    console.log('se supone que entro')
     socket.emit("message", {
       text: text
     });
