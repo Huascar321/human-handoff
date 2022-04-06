@@ -1,0 +1,29 @@
+.message-admin {
+  margin-top: 15px;
+  bottom: 15px;
+  padding: 10px;
+  p {
+    color: black;
+  }
+  span {
+    color: red;
+  }
+}
+
+.message-client {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-top: 15px;
+  bottom: 15px;
+  padding: 10px;
+  .message-container {
+    border: 1px solid green;
+  }
+  p {
+    color: black;
+  }
+  span {
+    color: green;
+  }
+}

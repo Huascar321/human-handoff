@@ -1,4 +1,5 @@
 import React from 'react';
+import './Chat.scss';
 
 function Chat({ socket, messages, setMessages }) { 
   React.useEffect(() => {
@@ -26,10 +27,12 @@ function Chat({ socket, messages, setMessages }) {
     <div className="chat-container">
       {messages.map((i) => {
         return (
-          <div key={i.id} className="message">
-            <p style={{color: "black"}}>{i.text}</p>
-            {(i.user === "client") && <span style={{color: "gray"}}>Cliente</span>}
-            {(i.user === "admin") && <span style={{color: "red"}}>Admin</span>}
+          <div key={i.id} className={i.user === "admin" ? "message-admin" : 'message-client'}>
+            <div className="message-container">
+              <p>{i.text}</p>
+              {(i.user === "client") && <span>Cliente</span>}
+              {(i.user === "admin") && <span>Admin</span>}
+            </div>
           </div>
         );
       })}
