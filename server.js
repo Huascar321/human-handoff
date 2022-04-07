@@ -3,7 +3,7 @@ const axios = require("axios");
 const app = express();
 const options = {
   cors: true,
-  origins: ["http://localhost:3000/"],
+  origins: ["http://localhost:3000/", "http://localhost:3001/"],
 };
 const PORT = process.env.PORT || 5000;
 
@@ -16,6 +16,7 @@ const io = require("socket.io")(server, options);
 // Urls
 const botURL = "http://localhost:5005/webhooks/rest/webhook";
 const handoffURL = "http://localhost:8888";
+const handoff = false; //hacer algo con este handoff
 let url = botURL;
 
 app.get("/express_backend", (req, res) => {
@@ -34,6 +35,7 @@ const sendMessage = async (data, socket) => {
             // Human handoff
             if (url != handoffURL) {
               url = handoffURL;
+              handoff = true;
             }
           }
         }
