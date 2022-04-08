@@ -24,10 +24,10 @@ app.get("/express_backend", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  //res.sendFile('D:/Proyectos/Rasa/handoff-side/handoff.html');
-  res.sendFile(
-    "/home/huascar321/Documents/Projects/University/ThesisProject/handoff-side/handoff.html"
-  );
+  res.sendFile('D:/Proyectos/Rasa/handoff-side/handoff.html');
+  //res.sendFile(
+  // "/home/huascar321/Documents/Projects/University/ThesisProject/handoff-side/handoff.html"
+  //);
 });
 
 const sendMessage = async (data, socket) => {
@@ -46,9 +46,11 @@ const sendMessage = async (data, socket) => {
               }
             }
           }
-          socket.emit("message", {
+          if (!response.data[i].hasOwnProperty("custom")) {
+            socket.emit("message", {
             text: response.data[i].text,
-          });
+            });
+          }
         }
       } else {
         socket.emit("message", {
@@ -73,11 +75,7 @@ const getRandomInt = (max) => {
 
 io.on("connection", (socket) => {
   console.log("new user connected");
-  socket.emit("connection", null);
-  socket.emit("message", {
-    text: "Welcome, testing",
-  });
-  socket.emit("message-admin", "Welcome, testing");
+  //socket.emit("connection", null); 
 
   // Receiving messages
   socket.on("message-admin", (msg) => {
