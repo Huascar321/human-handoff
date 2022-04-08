@@ -23,8 +23,11 @@ app.get("/express_backend", (req, res) => {
   res.send({ express: "YOUR EXPRESS BACKEND IS CONNECTED TO REACT" });
 });
 
-app.get('/', (req, res) => {
-  res.sendFile('D:/Proyectos/Rasa/handoff-side/handoff.html');
+app.get("/", (req, res) => {
+  //res.sendFile('D:/Proyectos/Rasa/handoff-side/handoff.html');
+  res.sendFile(
+    "/home/huascar321/Documents/Projects/University/ThesisProject/handoff-side/handoff.html"
+  );
 });
 
 const sendMessage = async (data, socket) => {
@@ -57,9 +60,11 @@ const sendMessage = async (data, socket) => {
       console.error(err);
     }
   } else {
-    io.emit("message", {
-      text: data.message,
-    });
+    if (data.hasOwnProperty("isHandoff")) {
+      io.emit("message", {
+        text: data.message,
+      });
+    }
   }
 };
 
@@ -81,6 +86,7 @@ io.on("connection", (socket) => {
     socket.emit("message-admin", msg);
     let data = {
       sender: "test_user",
+      isHandoff: true,
       message: msg,
     };
     sendMessage(data, socket);
@@ -103,17 +109,4 @@ io.on("connection", (socket) => {
     }
     sendMessage(data, socket);
   });
-  //io.on("message-admin", (msg) => {
-  //  console.log("message-admin: " + msg.text);
-  //  socket.emit("message", {
-  //    id: getRandomInt(200),
-  //    user: "admin",
-  //    text: msg.text,
-  //  });
-  //  let data = {
-  //    sender: "test_user",
-  //    message: msg.text,
-  //  };
-  //  sendMessage(data, socket);
-  //});
 });
