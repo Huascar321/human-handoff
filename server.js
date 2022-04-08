@@ -42,7 +42,6 @@ const sendMessage = async (data, socket) => {
             if (response.data[i].custom.hasOwnProperty("handoff_host")) {
               // Human handoff
               if (url !== handoffURL) {
-                url = handoffURL;
                 handoff = true;
               }
             }
@@ -82,14 +81,17 @@ io.on("connection", (socket) => {
 
   // Receiving messages
   socket.on("message-admin", (msg) => {
-    console.log(msg);
-    socket.emit("message-admin", msg);
-    let data = {
-      sender: "test_user",
-      isHandoff: true,
-      message: msg,
-    };
-    sendMessage(data, socket);
+    if (msg === "/stop") {
+      handoff = false;
+    } else {
+      socket.emit("message-admin", msg);
+      let data = {
+        sender: "test_user",
+        isHandoff: true,
+        message: msg,
+      };
+      sendMessage(data, socket);
+    } 
   });
   socket.on("message", (msg) => {
     console.log("message: " + msg.text);
