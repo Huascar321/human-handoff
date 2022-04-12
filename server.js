@@ -5,10 +5,13 @@ const options = {
   cors: true,
   origins: ["http://localhost:3000/", "http://localhost:5000/"],
 };
+const { Configuration, OpenAIApi } = require("openai");
 const PORT = process.env.PORT || 5000;
+require('dotenv').config();
 
 const server = app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
+  console.log(process.env.OPENAI_API_KEY);
 });
 
 const io = require("socket.io")(server, options);
@@ -43,6 +46,7 @@ const sendMessage = async (data, socket) => {
               // Human handoff
               if (url !== handoffURL) {
                 handoff = true;
+                socket.emit("handoff", true);
               }
             }
           }
@@ -109,4 +113,43 @@ io.on("connection", (socket) => {
     }
     sendMessage(data, socket);
   });
+  // Receiving handoff
+  socket.on("handoff", (data) => {
+    console.log("previous messages: ");
+    console.log(data);
+    summarizer(data);
+    //console.log(generatePrompt(data).replaceAll(',', ''));
+  });
 });
+
+// OpenAi
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
+
+const summarizer = async (conversation) => {
+  const completion = await openai.createCompletion("text-davinci-002", {
+    prompt: generatePrompt(conversation).replaceAll(',', ''),
+    temperature: 0.7,
+    top_p: 1,
+    presence_penalty: 0,
+    frequency_penalty: 0,
+    best_of: 1,
+    max_tokens: 300,
+  });
+  console.log(generatePrompt(conversation).replaceAll(',', ''));
+  console.log(completion.data.choices[0].text);
+  //console.log(completion.data.choices);
+};
+
+const generatePrompt = (conversation) => {
+  return `${conversation.map(msg => {
+    if (msg.user === "admin") {
+      return `Chatbot: ${msg.text}\n`
+    } else {
+      return `Cliente: ${msg.text}\n`
+    }
+  })}\nResume en español la conversacion de arriba`;
+};

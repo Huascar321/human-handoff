@@ -21,6 +21,9 @@ function Chat({ socket, messages, setMessages }) {
       }
       setMessages([...temp]);
     });
+    socket.on("handoff", () => {
+      socket.emit("handoff", messages);
+    });
   }, [socket]);
 
   return (
