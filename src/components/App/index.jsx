@@ -1,9 +1,9 @@
 import React from 'react';
-import './App.scss';
 import { ChatHeader } from '../ChatHeader';
 import { Input } from '../Input';
 import { useServer } from './customHooks/useServer';
 import { Chat } from '../Chat';
+import { ChatContainer } from '../ChatContainer'
 import io from 'socket.io-client';
 
 
@@ -35,12 +35,14 @@ function App() {
       <div className="app-container">
         <p style={{color: "black"}}>dato: {dataValue}</p>
         <ChatHeader/>
-        <Chat
-          socket={socket}
-          messages={messages}
-          setMessages={setMessages}
-          getRandomInt={getRandomInt}
-        />
+        <ChatContainer>
+          <Chat
+            socket={socket}
+            messages={messages}
+            setMessages={setMessages}
+            getRandomInt={getRandomInt}
+          /> 
+        </ChatContainer>
         <Input
           socket={socket}
           messages={messages}

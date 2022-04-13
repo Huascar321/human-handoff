@@ -18,18 +18,20 @@ function Input({ socket, messages, setMessages }) {
     });
   };
   return(
-    <div className="submit-container">
-      <input 
-        value={text} 
-        onChange={(e) => setText(e.target.value)} 
-        onKeyPress={(e) => {
-          if (e.key === "Enter") {
-            sendData();
-            setText("");
-          }
-        }} 
-        className="submit-container__textarea" placeholder="Escribe tu mensaje..."/>
-      <button className="submit-container__submit" onClick={sendData}>Enviar</button>
+    <div className="general_submit_container">
+      <div className="submit-container">
+        <input 
+          value={text} 
+          onChange={(e) => setText(e.target.value)} 
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              sendData();
+              setText("");
+            }
+          }} 
+          className="submit-container__textarea" placeholder="Escribe tu mensaje..."/>
+        <button className="submit-container__submit" onClick={sendData}>Enviar</button>
+      </div>
     </div>
   );
 }

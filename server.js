@@ -5,7 +5,7 @@ const options = {
   cors: true,
   origins: ["http://localhost:3000/", "http://localhost:5000/"],
 };
-const { Configuration, OpenAIApi } = require("openai");
+//const { Configuration, OpenAIApi } = require("openai");
 const PORT = process.env.PORT || 5000;
 require('dotenv').config();
 
@@ -117,13 +117,13 @@ io.on("connection", (socket) => {
   socket.on("handoff", (data) => {
     console.log("previous messages: ");
     console.log(data);
-    summarizer(data);
+    //summarizer(data);
     //console.log(generatePrompt(data).replaceAll(',', ''));
   });
 });
 
 // OpenAi
-const configuration = new Configuration({
+/*const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -152,4 +152,4 @@ const generatePrompt = (conversation) => {
       return `Cliente: ${msg.text}\n`
     }
   })}\nResume en español la conversacion de arriba`;
-};
+};*/

@@ -27,19 +27,17 @@ function Chat({ socket, messages, setMessages }) {
   }, [socket]);
 
   return (
-    <div className="chat-container">
+    <>
       {messages.map((i) => {
         return (
           <div key={i.id} className={i.user === "admin" ? "message-admin" : 'message-client'}>
             <div className="message-container">
               <p>{i.text}</p>
-              {(i.user === "client") && <span>Cliente</span>}
-              {(i.user === "admin") && <span>Admin</span>}
             </div>
           </div>
         );
       })}
-    </div>
+    </>
   );
 }
 

@@ -1,11 +1,20 @@
+@import "../../global";
+
+.general_submit_container {
+ background-color: #ffffff; 
+}
+
 .submit-container {
   display: flex;
-  width: 100%;
+  margin: 0 auto;
+  width: 80%;
   height: 45px;
-  border: 5px solid black;
+  border: 5px solid $tertiary-color;
   margin-top: auto;
   &__textarea {
     width: 100%;
+    border: none;
+    background-color: $tertiary-color;
   }
   &__submit {
     width: 20%;
