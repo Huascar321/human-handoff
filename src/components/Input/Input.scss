@@ -1,22 +1,48 @@
 @import "../../global";
 
 .general_submit_container {
- background-color: #ffffff; 
+  height: 70px;
+  background-color: #ffffff;
 }
 
 .submit-container {
   display: flex;
   margin: 0 auto;
   width: 80%;
-  height: 45px;
+  height: 50px;
+  background-color: $tertiary-color;
   border: 5px solid $tertiary-color;
+  border-radius: 7px;
   margin-top: auto;
-  &__textarea {
+  align-items: center;
+  &--input {
+    display: flex;
     width: 100%;
-    border: none;
+    height: 100%;
     background-color: $tertiary-color;
   }
+  &__textarea {
+    width: 80%;
+    height: 100%;
+    border: none;
+    margin: 0 auto;
+    background-color: $tertiary-color;
+    &::placeholder {
+      color: #b0bac2;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
   &__submit {
+    height: 70%;
     width: 20%;
+    background-image: url('../../../public/assets/paper-plane.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    margin: 0 auto;
+    border: none;
+    cursor: pointer;
   }
 }

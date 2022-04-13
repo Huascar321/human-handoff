@@ -1,5 +1,5 @@
-import React from 'react';
-import './Input.scss';
+import React from "react";
+import "./Input.scss";
 
 function Input({ socket, messages, setMessages }) {
   const [text, setText] = React.useState("");
@@ -14,23 +14,27 @@ function Input({ socket, messages, setMessages }) {
     //setMessages([...temp])
     console.log(messages);
     socket.emit("message", {
-      text: text
+      text: text,
     });
   };
-  return(
+  return (
     <div className="general_submit_container">
       <div className="submit-container">
-        <input 
-          value={text} 
-          onChange={(e) => setText(e.target.value)} 
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              sendData();
-              setText("");
-            }
-          }} 
-          className="submit-container__textarea" placeholder="Escribe tu mensaje..."/>
-        <button className="submit-container__submit" onClick={sendData}>Enviar</button>
+        <div className="submit-container--input">
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                sendData();
+                setText("");
+              }
+            }}
+            className="submit-container__textarea"
+            placeholder="Escribe tu mensaje..."
+          />
+        </div>
+        <button className="submit-container__submit" onClick={sendData} />
       </div>
     </div>
   );
