@@ -2,6 +2,12 @@ import React from "react";
 import "./Chat.scss";
 
 function Chat({ socket, messages, setMessages }) {
+  const messagesEndRef = React.useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
   React.useEffect(() => {
     socket.on("message", (data) => {
       let temp = messages;
@@ -24,6 +30,7 @@ function Chat({ socket, messages, setMessages }) {
     socket.on("handoff", () => {
       socket.emit("handoff", messages);
     });
+    scrollToBottom()
   }, [socket]);
 
   return (
@@ -40,6 +47,7 @@ function Chat({ socket, messages, setMessages }) {
           </div>
         );
       })}
+      <div ref={messagesEndRef} />
     </>
   );
 }

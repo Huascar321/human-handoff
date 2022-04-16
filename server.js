@@ -26,6 +26,11 @@ app.get("/express_backend", (req, res) => {
   res.send({ express: "YOUR EXPRESS BACKEND IS CONNECTED TO REACT" });
 });
 
+app.post("/trigger_intent", (req, res) => {
+  console.log('POST hecho con exito');
+  console.log(req.body);
+});
+
 app.get("/", (req, res) => {
   res.sendFile('D:/Proyectos/Rasa/handoff-side/handoff.html');
   //res.sendFile(
@@ -39,6 +44,10 @@ const sendMessage = async (data, socket) => {
       const response = await axios.post(url, data);
       console.log("response data: ");
       console.log(response.data);
+      //if (response.data[0].hasOwnProperty("buttons")) {
+        //console.log("response data (buttons): ");
+        //console.log (response.data[0].buttons)
+      //}
       if (response.data.length > 0) {
         for (let i = 0; i < response.data.length; i++) {
           if (response.data[i].hasOwnProperty("custom")) {
@@ -47,6 +56,22 @@ const sendMessage = async (data, socket) => {
               if (url !== handoffURL) {
                 handoff = true;
                 socket.emit("handoff", true);
+              }
+            } else if (response.data[i].custom.hasOwnProperty("closest_intent")) {
+              // Handle closest intent
+              console.log("Requiere handle closest intent");
+              const closest_intent = response.data[i].custom.closest_intent
+              const intent = {
+                "name": closest_intent,
+              }
+              const x = await axios.post(`http://localhost:5005/conversations/${response.data[i].recipient_id}/trigger_intent`, intent);
+              console.log(x.data);
+              // NECESITA REFACTORIZACION
+              for (let i = 0; i < x.data.messages.length; i++) {
+                console.log("Entrando a bucle for")
+                socket.emit("message", {
+                  text: x.data.messages[i].text,
+                });
               }
             }
           }
@@ -83,35 +108,40 @@ io.on("connection", (socket) => {
 
   // Receiving messages
   socket.on("message-admin", (msg) => {
-    if (msg === "/stop") {
-      handoff = false;
-    } else {
-      socket.emit("message-admin", msg);
-      let data = {
-        sender: "test_user",
-        isHandoff: true,
-        message: msg,
-      };
-      sendMessage(data, socket);
-    } 
+    if (msg !== "") {
+      if (msg === "/stop") {
+        handoff = false;
+      } else {
+        socket.emit("message-admin", msg);
+        let data = {
+          sender: "test_user",
+          isHandoff: true,
+          message: msg,
+        };
+        sendMessage(data, socket);
+      }
+    }
   });
   socket.on("message", (msg) => {
-    console.log("message: " + msg.text);
-    socket.emit("message", {
-      id: getRandomInt(200),
-      user: "client",
-      text: msg.text,
-    });
-    let data = {
-      sender: "test_user",
-      message: msg.text,
-    };
-    console.log(`handoff: ${handoff}`);
-    if (handoff === true) {
-      console.log("entrando a handoff");
-      io.emit("message-admin", msg.text);
+    console.log(msg)
+    if (msg.text !== "") {
+      console.log("message: " + msg.text);
+      socket.emit("message", {
+        id: getRandomInt(200),
+        user: "client",
+        text: msg.text,
+      });
+      let data = {
+        sender: "test_user",
+        message: msg.text,
+      };
+      console.log(`handoff: ${handoff}`);
+      if (handoff === true) {
+        console.log("entrando a handoff");
+        io.emit("message-admin", msg.text);
+      }
+      sendMessage(data, socket);
     }
-    sendMessage(data, socket);
   });
   // Receiving handoff
   socket.on("handoff", (data) => {
