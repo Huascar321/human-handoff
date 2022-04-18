@@ -7,7 +7,7 @@ const options = {
 };
 //const { Configuration, OpenAIApi } = require("openai");
 const PORT = process.env.PORT || 5000;
-require('dotenv').config();
+require("dotenv").config();
 
 const server = app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
@@ -22,17 +22,31 @@ const handoffURL = "http://localhost:8888";
 let handoff = false; //hacer algo con este handoff
 let url = botURL;
 
+app.use(express.json());
+
 app.get("/express_backend", (req, res) => {
   res.send({ express: "YOUR EXPRESS BACKEND IS CONNECTED TO REACT" });
 });
 
-app.post("/trigger_intent", (req, res) => {
-  console.log('POST hecho con exito');
-  console.log(req.body);
-});
+const triggerIntentSentiment = async (socket) => {
+  const intent = {
+    name: "human_handoff",
+  }
+  const response = await axios.post(`http://localhost:5005/conversations/test_user/trigger_intent`, intent);
+  console.log("print sentiment data: \n")
+  console.log(response.data);
+  for (let i = 0; i < response.data.messages.length; i++){
+    console.log("Entrando a bucle for");
+    socket.emit("message", {
+      text: response.data.messages[i].text,
+    });
+  }
+  handoff = true;
+  socket.emit("handoff", true);
+};
 
 app.get("/", (req, res) => {
-  res.sendFile('D:/Proyectos/Rasa/handoff-side/handoff.html');
+  res.sendFile("D:/Proyectos/Rasa/handoff-side/handoff.html");
   //res.sendFile(
   // "/home/huascar321/Documents/Projects/University/ThesisProject/handoff-side/handoff.html"
   //);
@@ -45,8 +59,8 @@ const sendMessage = async (data, socket) => {
       console.log("response data: ");
       console.log(response.data);
       //if (response.data[0].hasOwnProperty("buttons")) {
-        //console.log("response data (buttons): ");
-        //console.log (response.data[0].buttons)
+      //console.log("response data (buttons): ");
+      //console.log (response.data[0].buttons)
       //}
       if (response.data.length > 0) {
         for (let i = 0; i < response.data.length; i++) {
@@ -57,27 +71,36 @@ const sendMessage = async (data, socket) => {
                 handoff = true;
                 socket.emit("handoff", true);
               }
-            } else if (response.data[i].custom.hasOwnProperty("closest_intent")) {
+            } else if (
+              response.data[i].custom.hasOwnProperty("closest_intent")
+            ) {
               // Handle closest intent
               console.log("Requiere handle closest intent");
-              const closest_intent = response.data[i].custom.closest_intent
+              const closest_intent = response.data[i].custom.closest_intent;
               const intent = {
-                "name": closest_intent,
-              }
-              const x = await axios.post(`http://localhost:5005/conversations/${response.data[i].recipient_id}/trigger_intent`, intent);
+                name: closest_intent,
+              };
+              const x = await axios.post(
+                `http://localhost:5005/conversations/${response.data[i].recipient_id}/trigger_intent`,
+                intent
+              );
               console.log(x.data);
               // NECESITA REFACTORIZACION
               for (let i = 0; i < x.data.messages.length; i++) {
-                console.log("Entrando a bucle for")
+                console.log("Entrando a bucle for");
                 socket.emit("message", {
                   text: x.data.messages[i].text,
                 });
               }
+            } else if (response.data[i].custom.hasOwnProperty("angry")) {
+              // Handle sentiment analysis NO ES EL QUE FUNCIONA
+              console.log("El cliente ta emputao: ");
+              console.log(response.data[i].custom);
             }
           }
           if (!response.data[i].hasOwnProperty("custom")) {
             socket.emit("message", {
-            text: response.data[i].text,
+              text: response.data[i].text,
             });
           }
         }
@@ -104,7 +127,7 @@ const getRandomInt = (max) => {
 
 io.on("connection", (socket) => {
   console.log("new user connected");
-  //socket.emit("connection", null); 
+  //socket.emit("connection", null);
 
   // Receiving messages
   socket.on("message-admin", (msg) => {
@@ -123,7 +146,7 @@ io.on("connection", (socket) => {
     }
   });
   socket.on("message", (msg) => {
-    console.log(msg)
+    console.log(msg);
     if (msg.text !== "") {
       console.log("message: " + msg.text);
       socket.emit("message", {
@@ -149,6 +172,14 @@ io.on("connection", (socket) => {
     console.log(data);
     //summarizer(data);
     //console.log(generatePrompt(data).replaceAll(',', ''));
+  });
+  // Receiving sentiment analysis
+  app.post("/trigger_intent", (req, res) => {
+    // Handle sentiment analysis SI FUNCIONA
+    console.log("POST hecho con exito");
+    console.log(req.body);
+    triggerIntentSentiment(socket);
+    res.sendStatus(201);
   });
 });
 
